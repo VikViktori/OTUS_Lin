@@ -1,30 +1,23 @@
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
+MACHINES = {
+  :"kernel-update" => {
+              :box_name => "generic/centos8s",
+              :box_version => "4.3.4",
+              :cpus => 2,
+              :memory => 1024,
+            }
+}
 
-#Параметры указываются в цикле
 Vagrant.configure("2") do |config|
-  #Указываем, какую ОС мы будем использовать
-  config.vm.box = "ubuntu/focal64"
-  #Можно указать конкретную версию сборки
-  #Номера сборок можно посмотреть в Vagrant Cloud
-  config.vm.box_version = "20220427.0.0"
-
-  #Проброс порта с гостевой машины в хост
-  #Порт 80 в созданной ВМ будет доступен нам на порту 8080 хоста
-  config.vm.network "forwarded_port", guest: 80, host: 8080
-
-  #Указываем настройки спецификации ВМ
-  #Указывается в отдельном цикле
-  config.vm.provider "virtualbox" do |vb|
-     # Указываем количество ОЗУ и ядер процессора
-     vb.memory = "1024"
-     vb.cpus = "1"
+  MACHINES.each do |boxname, boxconfig|
+    config.vm.synced_folder ".", "/vagrant", disabled: true
+    config.vm.define boxname do |box|
+      box.vm.box = boxconfig[:box_name]
+      box.vm.box_version = boxconfig[:box_version]
+      box.vm.host_name = boxname.to_s
+      box.vm.provider "virtualbox" do |v|
+        v.memory = boxconfig[:memory]
+        v.cpus = boxconfig[:cpus]
+      end
+    end
   end
-
-  #Первоначальная настройка созданной ВМ
-  #Установка и запуск Веб-сервера Apache2
-  config.vm.provision "shell", inline: <<-SHELL
-     sudo apt-get update
-     sudo apt-get install -y apache2
-  SHELL
 end
