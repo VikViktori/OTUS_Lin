@@ -21,6 +21,7 @@ sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /
 
 4) yum update -y
 5) sudo dnf --disablerepo="*" --enablerepo="elrepo-kernel" list available | grep kernel-ml
+Увидим все доступные свежие ядра
 6) Установим последнее ядро из репозитория elrepo-kernel:
 sudo yum --enablerepo elrepo-kernel install kernel-ml -y
 7) sudo system reboot
